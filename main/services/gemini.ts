@@ -37,7 +37,21 @@ interface GeminiRequest {
 
 export async function getDisposalAdvice(materialType: string): Promise<string> {
   try {
-    const prompt = `This object is categorized as ${materialType}. How should it be disposed of according to Toronto's waste management standards? Which bin should I place it in for recycling? Pls give a precise answer`;
+    const prompt = `This object is categorized as ${materialType}. How should it be disposed of according to Toronto's waste management standards? Which bin should I place it in for recycling? Please provide advice in the following format:
+
+*Proper Disposal Method
+- Step 1
+- Step 2
+- Step 3
+
+*Which Bin to Use
+- Bin type
+- Any special instructions
+
+*Additional Tips
+- Tip 1
+- Tip 2
+- Tip 3`;
 
     const requestBody: GeminiRequest = {
       contents: [
@@ -60,6 +74,10 @@ export async function getDisposalAdvice(materialType: string): Promise<string> {
         },
       }
     );
+
+    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      throw new Error('Invalid response format from API');
+    }
 
     return data.candidates[0].content.parts[0].text;
   } catch (error) {

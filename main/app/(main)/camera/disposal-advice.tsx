@@ -9,13 +9,13 @@ interface AdviceSection {
 }
 
 const parseAdviceText = (text: string): AdviceSection[] => {
-    // Split the text into lines
-    const lines = text.split('\n');
+    // Split the text into lines and filter out empty lines
+    const lines = text.split('\n').filter(line => line.trim());
     const sections: AdviceSection[] = [];
     let currentSection: AdviceSection | null = null;
 
     lines.forEach(line => {
-        // Remove markdown formatting
+        // Remove markdown formatting and trim
         const cleanLine = line.replace(/\*\*/g, '').trim();
         
         // Check if this is a heading (starts with *)
@@ -30,8 +30,9 @@ const parseAdviceText = (text: string): AdviceSection[] => {
                 content: []
             };
         } else if (currentSection && cleanLine) {
-            // Add content to current section
-            currentSection.content.push(cleanLine);
+            // Remove bullet points and add content to current section
+            const contentLine = cleanLine.replace(/^-\s*/, '');
+            currentSection.content.push(contentLine);
         }
     });
 
@@ -40,11 +41,19 @@ const parseAdviceText = (text: string): AdviceSection[] => {
         sections.push(currentSection);
     }
 
+    // If no sections were found, create a default section with the raw text
+    if (sections.length === 0) {
+        sections.push({
+            title: 'Disposal Advice',
+            content: text.split('\n').filter(line => line.trim())
+        });
+    }
+
     return sections;
 };
 
 export default function DisposalAdviceScreen() {
-    const { imageUri, materialType } = useLocalSearchParams<{ imageUri: string; materialType: string }>();
+    const params = useLocalSearchParams<{ imageUri: string; materialType: string }>();
     const [advice, setAdvice] = useState<AdviceSection[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,18 +62,32 @@ export default function DisposalAdviceScreen() {
         const fetchAdvice = async () => {
             try {
                 setLoading(true);
-                const disposalAdvice = await getDisposalAdvice(materialType);
-                setAdvice(parseAdviceText(disposalAdvice));
+                // Decode the material type from URL
+                const decodedMaterialType = decodeURIComponent(params.materialType);
+                console.log('Decoded material type:', decodedMaterialType);
+                
+                const disposalAdvice = await getDisposalAdvice(decodedMaterialType);
+                console.log('Received disposal advice:', disposalAdvice);
+                
+                const parsedAdvice = parseAdviceText(disposalAdvice);
+                console.log('Parsed advice sections:', parsedAdvice);
+                
+                setAdvice(parsedAdvice);
             } catch (err) {
-                setError('Failed to get disposal advice. Please try again.');
                 console.error('Error fetching disposal advice:', err);
+                setError('Failed to get disposal advice. Please try again.');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchAdvice();
-    }, [materialType]);
+        if (params.materialType) {
+            fetchAdvice();
+        } else {
+            setError('No material type provided');
+            setLoading(false);
+        }
+    }, [params.materialType]);
 
     if (loading) {
         return (
@@ -96,14 +119,14 @@ export default function DisposalAdviceScreen() {
             <ScrollView style={styles.container}>
                 <View style={styles.imageContainer}>
                     <Image
-                        source={{ uri: decodeURIComponent(imageUri) }}
+                        source={{ uri: decodeURIComponent(params.imageUri) }}
                         style={styles.image}
                         resizeMode="cover"
                     />
                 </View>
                 <View style={styles.contentContainer}>
                     <Text style={styles.title}>Disposal Advice</Text>
-                    <Text style={styles.materialType}>Material Type: {materialType}</Text>
+                    <Text style={styles.materialType}>Material Type: {decodeURIComponent(params.materialType)}</Text>
                     <View style={styles.adviceContainer}>
                         {advice?.map((section, index) => (
                             <View key={index} style={styles.section}>
