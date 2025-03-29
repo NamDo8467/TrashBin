@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-
+import { useRouter } from 'expo-router';
 
 const FileOrCamera = () => {
     const [image, setImage] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         (async () => {
@@ -17,32 +18,56 @@ const FileOrCamera = () => {
         })();
     }, []);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+    const handleImageSelection = (imageUri: string) => {
+      
+        const materialType = 'plastic';
+        
+        // Navigate to disposal advice screen with the image URI and material type
+        router.push({
+            pathname: '/(main)/camera/disposal-advice',
+            params: {
+                imageUri: encodeURIComponent(imageUri),
+                materialType: encodeURIComponent(materialType)
+            }
         });
+    };
 
-        console.log(result);
+    const pickImage = async () => {
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            if (!result.canceled) {
+                const imageUri = result.assets[0].uri;
+                setImage(imageUri);
+                handleImageSelection(imageUri);
+            }
+        } catch (error) {
+            console.error('Error picking image:', error);
+            Alert.alert('Error', 'Failed to pick image. Please try again.');
         }
     };
 
     const takePhoto = async () => {
-        const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+        try {
+            const result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        console.log(result);
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            if (!result.canceled) {
+                const imageUri = result.assets[0].uri;
+                setImage(imageUri);
+                handleImageSelection(imageUri);
+            }
+        } catch (error) {
+            console.error('Error taking photo:', error);
+            Alert.alert('Error', 'Failed to take photo. Please try again.');
         }
     };
 
