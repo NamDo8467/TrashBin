@@ -20,7 +20,7 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Error', error.message);
     } else {
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/profile');
     }
     setLoading(false);
   }
@@ -45,18 +45,18 @@ export default function LoginScreen() {
           secureTextEntry={!showPassword}
           placeholderTextColor="#999"
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.eyeIcon}
           onPress={() => setShowPassword(!showPassword)}
         >
-          <Ionicons 
-            name={showPassword ? "eye-off" : "eye"} 
-            size={24} 
-            color="#666" 
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="#666"
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.button}
         onPress={signInWithEmail}
         disabled={loading}
@@ -65,7 +65,7 @@ export default function LoginScreen() {
           {loading ? 'Loading...' : 'Sign In'}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => router.push('/(auth)/signup')}
         style={styles.linkButton}
       >
