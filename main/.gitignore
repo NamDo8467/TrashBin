@@ -39,3 +39,8 @@ app-example
 
 # Project specific
 context.md
+
+# Environment variables
+.env
+.env.*
+!.env.example
