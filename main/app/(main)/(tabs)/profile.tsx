@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { supabase } from '../../services/supabase';
+import { supabase } from '../../../services/supabase';
 import { router } from 'expo-router';
 
 export default function ProfileScreen() {
