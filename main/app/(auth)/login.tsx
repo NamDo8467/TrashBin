@@ -20,7 +20,7 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Error', error.message);
     } else {
-      router.replace('/(tabs)/profile');
+      router.replace('(main)/(tabs)');
     }
     setLoading(false);
   }
