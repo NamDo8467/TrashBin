@@ -4,15 +4,22 @@ import { router } from 'expo-router';
 import { supabase } from '../../services/supabase';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function LoginScreen() {
+export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  async function signInWithEmail() {
+  async function signUpWithEmail() {
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -20,20 +27,25 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Error', error.message);
     } else {
-      router.replace('/(tabs)');
+      Alert.alert(
+        'Success',
+        'Check your email for the confirmation link!',
+        [{ text: 'OK', onPress: () => router.push('/(auth)/login') }]
+      );
     }
     setLoading(false);
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to {process.env.EXPO_PUBLIC_APP_NAME}</Text>
+      <Text style={styles.title}>Create Account</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
+        keyboardType="email-address"
         placeholderTextColor="#999"
       />
       <View style={styles.passwordContainer}>
@@ -56,20 +68,40 @@ export default function LoginScreen() {
           />
         </TouchableOpacity>
       </View>
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={[styles.input, styles.passwordInput]}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry={!showConfirmPassword}
+          placeholderTextColor="#999"
+        />
+        <TouchableOpacity 
+          style={styles.eyeIcon}
+          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+        >
+          <Ionicons 
+            name={showConfirmPassword ? "eye-off" : "eye"} 
+            size={24} 
+            color="#666" 
+          />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity 
         style={styles.button}
-        onPress={signInWithEmail}
+        onPress={signUpWithEmail}
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? 'Loading...' : 'Sign In'}
+          {loading ? 'Creating Account...' : 'Sign Up'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity 
-        onPress={() => router.push('/(auth)/signup')}
+        onPress={() => router.push('/(auth)/login')}
         style={styles.linkButton}
       >
-        <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
+        <Text style={styles.linkText}>Already have an account? Sign In</Text>
       </TouchableOpacity>
     </View>
   );
