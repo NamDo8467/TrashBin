@@ -7,8 +7,9 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { supabase } from '../../services/supabase';
+import { supabase } from '../services/supabase';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AuthProvider from '@/services/AuthProvider';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -18,7 +19,7 @@ export default function RootLayout() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loaded] = useFonts({
-    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -48,19 +49,16 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SafeAreaView style={styles.safeArea}>
-        <Stack>
-          {!session ? (
-            // Auth screens
+      <AuthProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <Stack>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          ) : (
-            // App screens
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          )}
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </SafeAreaView>
+            <Stack.Screen name="(main)/(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </SafeAreaView>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

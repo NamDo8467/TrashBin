@@ -1,16 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import FileOrCamera from '@/screens/choose-file-or-camera';
 
-type Props = {}
+type Props = {};
 
 const camera = (props: Props) => {
   return (
-    <View>
-      <Text>camera</Text>
-    </View>
-  )
-}
+    <FileOrCamera />
+  );
+};
 
-export default camera
+export default camera;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

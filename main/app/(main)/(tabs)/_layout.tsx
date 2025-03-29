@@ -1,4 +1,4 @@
-import { Tabs, useRouter } from 'expo-router';
+import { Stack, Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -21,8 +21,6 @@ const CustomLeafButton = ({ color }) => {
   );
 };
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
