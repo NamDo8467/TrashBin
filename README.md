@@ -1,4 +1,4 @@
-# Trash Bin 🌱
+# BinGO 🌱
 A mobile application built with Expo and React Native that helps users properly categorize and dispose of waste following Canadian waste management standards.
 
 ## 📱 Core Features
@@ -16,7 +16,6 @@ A mobile application built with Expo and React Native that helps users properly 
 - **Database**: Supabase 
 
 ## 📋 Waste Categories
-
 - Metal
 - Glass
 - Biological
@@ -70,16 +69,17 @@ npm install
 # Start the Expo development server
 cd main
 npm start
+
+# Start the FastAPI backend server
+cd server 
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## 📄 License
+## 👥 Contributors
 
-[MIT License](LICENSE)
+1. [@NamDo8467](https://github.com/NamDo8467)
+2. [@ngnamquoc](https://github.com/ngnamquoc)
+3. [@tramanhvong](https://github.com/tramanhvong)
+4. [@tranguv](https://github.com/tranguv)
 
-## 👥 Contributing
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
