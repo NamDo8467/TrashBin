@@ -18,18 +18,45 @@ const FileOrCamera = () => {
         })();
     }, []);
 
-    const handleImageSelection = (imageUri: string) => {
-      
-        const materialType = 'plastic';
-        
-        // Navigate to disposal advice screen with the image URI and material type
-        router.push({
-            pathname: '/(main)/camera/disposal-advice',
-            params: {
-                imageUri: encodeURIComponent(imageUri),
-                materialType: encodeURIComponent(materialType)
+    const handleImageSelection = async (imageUri: string) => {
+        try {
+            // Prepare the image file to send to the Flask API
+            const formData = new FormData();
+            formData.append('file', {
+                uri: imageUri,
+                name: 'image.jpg', // Provide a name for the file
+                type: 'image/jpeg', // Specify the file type
+            });
+    
+            // Send the image to the Flask API
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Ensure the correct content type
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.statusText}`);
             }
-        });
+    
+            const result = await response.json();
+            console.log('Prediction result:', result);
+    
+            // Navigate to disposal advice screen with the image URI and predicted material type
+            const materialType = result.prediction; // Assuming the API returns { prediction: "materialType" }
+            router.push({
+                pathname: '/(main)/camera/disposal-advice',
+                params: {
+                    imageUri: encodeURIComponent(imageUri),
+                    materialType: encodeURIComponent(materialType),
+                },
+            });
+        } catch (error) {
+            console.error('Error handling image selection:', error);
+            Alert.alert('Error', 'Failed to classify the image. Please try again.');
+        }
     };
 
     const pickImage = async () => {
