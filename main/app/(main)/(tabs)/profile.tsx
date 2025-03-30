@@ -5,6 +5,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome"
 import { useEffect, useState } from "react"
 
 export default function ProfileScreen() {
+	const [fullName, setFullName] = useState("")
 	const [userEmail, setUserEmail] = useState("")
 	const [lastSignInAt, setLastSignInAt] = useState("")
 	const [createdAt, setCreatedAt] = useState("")
@@ -40,10 +41,11 @@ export default function ProfileScreen() {
 			} = await supabase.auth.getUser()
 			// console.log(user)
 			// console.log(user?.email)
+			setFullName(user?.email || "abc@gmail.com")
 			setUserEmail(user?.email || "abc@gmail.com")
 			setLastSignInAt(convertToDate(user?.last_sign_in_at) || "Unknown")
 			setCreatedAt(convertToDate(user?.created_at) || "Unknown")
-			setPhoneNumber(user?.phone || "(+1) 999-999-9999")
+			setPhoneNumber(user?.phone || "")
 			// console.log()
 		})()
 	}, [])
@@ -102,7 +104,7 @@ export default function ProfileScreen() {
 
 					<TextInput editable={false} style={styles.textInput}>
 						<FontAwesome name='user' />
-						<Text style={{ marginLeft: 100 }}> Hello World</Text>
+						<Text style={{ marginLeft: 100 }}> {fullName}</Text>
 					</TextInput>
 				</View>
 
