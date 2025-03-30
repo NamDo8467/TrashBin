@@ -48,13 +48,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       <AuthProvider>
         <SafeAreaView style={styles.safeArea}>
           <Stack>
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="(main)/(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+            <Stack.Screen name="(main)/blog/[id]" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
         </SafeAreaView>

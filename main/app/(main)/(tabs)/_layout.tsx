@@ -1,12 +1,7 @@
-import { Stack, Tabs, useRouter } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
