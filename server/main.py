@@ -38,7 +38,7 @@ async def predict(file: UploadFile = File(...)):
     predicted_class = int(np.argmax(logits))
     # confidence = float(np.max(logits))
     
-    labels = ["Paper", "Plastic", "Glass", "Metal", "Other", "Food", "Textile", "E-waste", "Hazardous", "Unknown"]
+    labels = ["Metal", "Glass", "Biological", "Paper", "Battery", "Trash", "Cardboard", "Shoes", "Clothes", "Plastic"]
     predicted_label = labels[predicted_class]
     # print("predicted_class",predicted_class)
     print("Predic end")
@@ -48,4 +48,3 @@ async def predict(file: UploadFile = File(...)):
         "prediction": predicted_label,
         # "confidence": confidence
     }
-
