@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import HomeScreen from '@/screens/home';
 
 type Props = {};
 
-const index = (props: Props) => {
+const SplashScreen = (props: Props) => {
     return (
-        <HomeScreen />
+        <View>
+            <Text>SplashScreen</Text>
+        </View>
     );
 };
 
-export default index;
+export default SplashScreen;
 
 const styles = StyleSheet.create({});
