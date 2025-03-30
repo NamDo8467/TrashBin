@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export interface User {
     id: string;
     username: string;
@@ -7,3 +9,12 @@ export interface User {
     created_at?: string;
     updated_at?: string;
 }
+
+export interface ArticleProps {
+    title: string;
+    author: string;
+    date: string;
+    quote: string;
+    image: ImageSourcePropType;
+}
+

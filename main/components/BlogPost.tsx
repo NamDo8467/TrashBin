@@ -7,9 +7,10 @@ type Props = {
     title: string;
     imageUrl: string;
     onPress?: () => void;
+    id: Number;
 };
 
-const BlogPost = ({ category, title, imageUrl, onPress }: Props) => {
+const BlogPost = ({ category, title, imageUrl, id, onPress }: Props) => {
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <View>
@@ -19,7 +20,7 @@ const BlogPost = ({ category, title, imageUrl, onPress }: Props) => {
                 </View>
             </View>
             <View style={styles.footer}>
-                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.title} numberOfLines={1}>{title}</Text>
                 <Ionicons name="arrow-forward-outline" size={16} color="black" />
             </View>
         </TouchableOpacity>
@@ -30,10 +31,12 @@ export default BlogPost;
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#e5e7eb', // light gray
+        backgroundColor: 'white', // light gray
         borderRadius: 12,
         padding: 8,
         width: 260,
+        height: 190,
+        overflowY: 'hidden'
     },
     image: {
         width: '100%',
@@ -66,5 +69,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: '#000',
+        marginRight: 5
     },
 });

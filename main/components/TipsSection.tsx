@@ -2,10 +2,15 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import React from 'react';
 import { blogs } from '@/constants';
 import BlogPost from './BlogPost';
+import { useRouter } from 'expo-router';
 
-type Props = {};
+const TipsSection = () => {
+    const router = useRouter();
 
-const TipsSection = (props: Props) => {
+    const openArticle = (id: number) => {
+        router.push(`/blog/${id}`);
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.post}>
@@ -19,7 +24,8 @@ const TipsSection = (props: Props) => {
                             category={blog.category}
                             title={blog.title}
                             imageUrl={blog.imageUrl}
-                            onPress={() => console.log(`Tapped on: ${blog.title}`)}
+                            id={blog.id}
+                            onPress={() => openArticle(blog.id)}
                         />
                     </View>
                 ))}
@@ -44,8 +50,9 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
     },
     post: {
-        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginHorizontal: 16,
+        marginBottom: 8,
     }
 });
