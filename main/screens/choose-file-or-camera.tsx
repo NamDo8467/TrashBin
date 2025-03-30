@@ -5,8 +5,11 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { useRouter } from 'expo-router';
 
+const BACKEND_URL_ANDROID = "192.168.2.34";
+console.log(BACKEND_URL_ANDROID);
 const FileOrCamera = () => {
     const [image, setImage] = useState<string | null>(null);
+    const [loading, setIsLoading] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -18,24 +21,48 @@ const FileOrCamera = () => {
         })();
     }, []);
 
-    const handleImageSelection = (imageUri: string) => {
-      
-        const materialType = 'plastic';
-        
-        // Navigate to disposal advice screen with the image URI and material type
-        router.push({
-            pathname: '/(main)/camera/disposal-advice',
-            params: {
-                imageUri: encodeURIComponent(imageUri),
-                materialType: encodeURIComponent(materialType)
-            }
-        });
+    const handleImageSelection = async (imageUri: string) => {
+        try {
+            setIsLoading(true);
+            // Classify the image using the model
+            const formData = new FormData();
+            formData.append('file', {
+                uri: imageUri,
+                name: 'image.jpg',
+                type: 'image/jpeg',
+            } as any);
+
+            const response = await fetch(`http://${BACKEND_URL_ANDROID}:8000/predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: formData,
+            });
+
+            const materialType = await response.json();
+            console.log("materialType", materialType);
+
+            // Navigate to disposal advice screen with the image URI and material type
+            router.push({
+                pathname: '/(main)/camera/disposal-advice',
+                params: {
+                    imageUri: encodeURIComponent(imageUri),
+                    materialType: encodeURIComponent(materialType.prediction),
+                }
+            });
+        } catch (error) {
+            console.error('Error classifying image:', error);
+            Alert.alert('Error', 'Failed to classify the image. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const pickImage = async () => {
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                mediaTypes: ['images'],
                 allowsEditing: true,
                 aspect: [4, 3],
                 quality: 1,
