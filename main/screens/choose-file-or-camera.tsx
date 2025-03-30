@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import { useRouter } from 'expo-router';
-
+import {modelService} from '../services/modelService';
 const FileOrCamera = () => {
     const [image, setImage] = useState<string | null>(null);
     const router = useRouter();
@@ -18,18 +18,25 @@ const FileOrCamera = () => {
         })();
     }, []);
 
-    const handleImageSelection = (imageUri: string) => {
-      
-        const materialType = 'plastic';
-        
-        // Navigate to disposal advice screen with the image URI and material type
-        router.push({
-            pathname: '/(main)/camera/disposal-advice',
-            params: {
-                imageUri: encodeURIComponent(imageUri),
-                materialType: encodeURIComponent(materialType)
-            }
-        });
+    const handleImageSelection = async (imageUri: string) => {
+        try {
+            // Classify the image using the model
+            const materialType = await modelService.classifyImage(imageUri);
+            console.log(materialType);
+
+            // Navigate to disposal advice screen with the image URI and material type
+            router.push({
+                pathname: '/(main)/camera/disposal-advice',
+                params: {
+                    imageUri: encodeURIComponent(imageUri),
+                    materialType: encodeURIComponent(materialType)
+                }
+            });
+        } catch (error) {
+            console.error('Error classifying image:', error);
+            Alert.alert('Error', 'Failed to classify the image. Please try again.');
+        } finally {
+        }
     };
 
     const pickImage = async () => {
