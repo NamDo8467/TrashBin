@@ -17,7 +17,7 @@ const parseAdviceText = (text: string): AdviceSection[] => {
     lines.forEach(line => {
         // Remove markdown formatting
         const cleanLine = line.replace(/\*\*/g, '').trim();
-        
+
         // Check if this is a heading (starts with *)
         if (line.trim().startsWith('*')) {
             // If we have a previous section, add it to sections
@@ -44,27 +44,46 @@ const parseAdviceText = (text: string): AdviceSection[] => {
 };
 
 export default function DisposalAdviceScreen() {
-    const { imageUri, materialType } = useLocalSearchParams<{ imageUri: string; materialType: string }>();
+    const { imageUri, materialType } = useLocalSearchParams();
+    const [parsedMaterialType, setParsedMaterialType] = useState<string | null>(null);
     const [advice, setAdvice] = useState<AdviceSection[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    console.log("imageUri", imageUri);
     useEffect(() => {
-        const fetchAdvice = async () => {
+        if (materialType) {
             try {
-                setLoading(true);
-                const disposalAdvice = await getDisposalAdvice(materialType);
-                setAdvice(parseAdviceText(disposalAdvice));
-            } catch (err) {
-                setError('Failed to get disposal advice. Please try again.');
-                console.error('Error fetching disposal advice:', err);
-            } finally {
+                console.log("materialTypedispose", materialType);
+                setParsedMaterialType(decodeURIComponent(materialType));
+            } catch (e) {
+                setError('Invalid material type format.');
                 setLoading(false);
             }
-        };
-
-        fetchAdvice();
+        }
     }, [materialType]);
+
+    const fetchAdvice = async () => {
+        if (!parsedMaterialType) return;
+
+        try {
+            setLoading(true);
+            console.log(parsedMaterialType);
+            const disposalAdvice = await getDisposalAdvice(parsedMaterialType["prediction"]);
+            setAdvice(parseAdviceText(disposalAdvice));
+        } catch (err) {
+            setError('Failed to get disposal advice. Please try again.');
+            console.error('Error fetching disposal advice:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (parsedMaterialType) {
+            fetchAdvice();
+        }
+    }, [parsedMaterialType]);
 
     if (loading) {
         return (
@@ -87,11 +106,11 @@ export default function DisposalAdviceScreen() {
 
     return (
         <>
-            <Stack.Screen 
-                options={{ 
+            <Stack.Screen
+                options={{
                     title: 'Disposal Advice',
                     headerBackTitle: 'Back'
-                }} 
+                }}
             />
             <ScrollView style={styles.container}>
                 <View style={styles.imageContainer}>
@@ -99,11 +118,16 @@ export default function DisposalAdviceScreen() {
                         source={{ uri: decodeURIComponent(imageUri) }}
                         style={styles.image}
                         resizeMode="cover"
+                        onError={(err) => {
+                            console.warn('Image failed to load:', err.nativeEvent);
+                        }}
                     />
                 </View>
                 <View style={styles.contentContainer}>
                     <Text style={styles.title}>Disposal Advice</Text>
-                    <Text style={styles.materialType}>Material Type: {materialType}</Text>
+                    <Text style={styles.materialType}>
+                        Material Type: {parsedMaterialType ?? 'Unknown'} {'\n'}
+                    </Text>
                     <View style={styles.adviceContainer}>
                         {advice?.map((section, index) => (
                             <View key={index} style={styles.section}>
