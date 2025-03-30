@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "expo-image-picker": "^16.0.6"
+    "expo-image-picker": "^16.0.6",
+    "react-native-dotenv": "^3.4.11"
   }
 }
